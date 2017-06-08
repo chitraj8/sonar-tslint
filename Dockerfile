@@ -28,3 +28,8 @@
 # Install tslint
 	CMD 'npm install -g typescript'
 
+#RUN useradd -ms /bin/bash newuser
+#USER newuser
+#WORKDIR /home/newuser
+#docker run -t -i image
+#newuser@131b7ad86360:~$
