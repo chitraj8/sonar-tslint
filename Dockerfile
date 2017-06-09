@@ -20,7 +20,7 @@
 # Make Directories
 	RUN bash -c 'mkdir -p /bms/tools/sonar-runner'
 	CMD 'cd /bms/tools/sonar-runner'
-        CMD 'chmod 777 -R /bms/tools/sonar-runner
+        CMD 'chmod 777 -R /bms/tools'
 # Install sonar-scanner
 	RUN wget http://engci-maven-master.cisco.com/artifactory/bms-vendor-files/sonarqube/sonar-scanner/sonar-scanner-2.8.zip && unzip sonar-scanner-2.8.zip -d /bms/tools/sonar-runner && rm sonar-scanner-2.8.zip
 	ENV SONAR_RUNNER_HOME=/bms/tools/sonar-runner/sonar-scanner-2.8
