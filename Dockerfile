@@ -1,37 +1,47 @@
 # EngIT Public Agents run on RHEL7.2 so this is an ideal base layer
-	FROM centos:7.2.1511
+FROM centos:7
+
 # Setup Environment
-	ENV PATH /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin ENV HOME /root ENV JAVA_HOME /usr/lib/jvm/jre-1.8.0-openjdk
+ENV PATH /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+ENV HOME /root
+ENV JAVA_HOME /usr/lib/jvm/jre-1.8.0-openjdk
+
+# Install the EPEL repository
+RUN yum -y install \
+  epel-release
+
 # Setup Yum repos
-	RUN yum install -y wget unzip
-	RUN wget -O /etc/yum.repos.d/epel-apache-maven.repo http://repos.fedorapeople.org/repos/dchen/apache-maven/epel-apache-maven.repo
+RUN yum install -y wget \
+          unzip \
+          tar
+
+ # Install required developer tools
+RUN yum -y install \
+  make \
+  gcc \
+  git
+
 # Install Tool Packages
-	RUN yum install -y java-1.8.0-openjdk \
-		apache-maven \
-		python \
-		ant \
-		gradle \
-		groovy \
-		which \
-		npm
+RUN yum -y install java-1.8.0-openjdk \
+                apache-maven
 
-# Install nodejs
-	RUN curl --silent --location https://rpm.nodesource.com/setup_6.x | bash -
-# Make Directories
-	RUN bash -c 'mkdir -p /bms/tools/sonar-runner'
-	CMD 'cd /bms/tools/sonar-runner'
-        
+# Install node & npm and upgrade to desired versions.
+RUN yum -y install \
+  nodejs \
+  npm && \
+  npm install -g n && \
+  n 4.4.4 && \
+  npm install -g npm@2.15.1
+
+#Make Directory
+RUN mkdir /opt/sonar-runner
+
 # Install sonar-scanner
-	RUN wget http://engci-maven-master.cisco.com/artifactory/bms-vendor-files/sonarqube/sonar-scanner/sonar-scanner-2.8.zip && unzip sonar-scanner-2.8.zip -d /bms/tools/sonar-runner && rm sonar-scanner-2.8.zip
-	ENV SONAR_RUNNER_HOME=/bms/tools/sonar-runner/sonar-scanner-2.8
-	ENV PATH $PATH:/bms/tools/sonar-runner/sonar-scanner-current/sonar-scanner-2.8/bin
-	
-# Install tslint
-	CMD 'npm install -g typescript'
- 	CMD 'chmod 777 -R /bms/tools/sonar-runner/sonar-scanner-current/sonar-scanner-2.8/bin’
+RUN wget http://engci-maven-master.cisco.com/artifactory/bms-vendor-files/sonarqube/sonar-scanner/sonar-scanner-2.8.zip&& unzip sonar-scanner-2.8.zip -d /opt/sonar-runner && rm sonar-scanner-2.8.zip
+        ENV SONAR_RUNNER_HOME=/opt/sonar-runner/sonar-scanner-2.8
+        ENV PATH $PATH:/opt/sonar-runner/sonar-scanner-2.8/bin
 
-#RUN useradd -ms /bin/bash newuser
-#USER newuser
-#WORKDIR /home/newuser
-#docker run -t -i image
-#newuser@131b7ad86360:~$
+# Install tslint
+        RUN npm i -g typescript && \
+
+  npm cache clean
